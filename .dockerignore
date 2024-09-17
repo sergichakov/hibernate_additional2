@@ -1,0 +1,6 @@
+logs/
+.idea/
+.mvn/
+src/
+node_modules/
+Dockerfile/
