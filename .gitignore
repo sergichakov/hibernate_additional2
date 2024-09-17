@@ -9,6 +9,9 @@ mvnw
 mvnw.cmd
 .github/
 Dockerfile
+my.htm
+my (Copy).html
+my (Copy)with Fetch .html
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
