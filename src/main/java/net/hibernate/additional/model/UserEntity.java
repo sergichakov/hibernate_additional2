@@ -26,7 +26,7 @@ import java.util.Objects;
 @Entity
 @Table(name="users")
 
-public class  UserEntity implements Serializable{//UserType<String> {
+public class  UserEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE )
     private Long user_id;

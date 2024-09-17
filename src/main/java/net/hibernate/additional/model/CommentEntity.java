@@ -25,7 +25,7 @@ public class CommentEntity {
     private Long id;
     @ToString.Exclude
     @ManyToOne(cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY)
-    @JoinColumn(name="task_id")//1"task_id") nullable=false)
+    @JoinColumn(name="task_id")
     private TaskEntity task;
     @Column (name="comment_of_task", length=512)
     private String comment;

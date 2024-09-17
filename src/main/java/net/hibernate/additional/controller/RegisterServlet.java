@@ -1,6 +1,6 @@
 package net.hibernate.additional.controller;
 
-//userName=ADMIN&password=ADMIN
+
 import net.hibernate.additional.dto.UserDTO;
 import net.hibernate.additional.exception.AuthenticationException;
 import net.hibernate.additional.object.SessionObject;

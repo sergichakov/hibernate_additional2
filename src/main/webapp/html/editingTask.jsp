@@ -30,17 +30,7 @@
         <th>UserName</th>
         <th ${hideForm}>Edit</th>
         <th ${hideForm}>Delete</th>
-        <!--<th>Banned</th>
-                 <th>#</th>
-                <th>Name</th>
-                <th>Title</th>
-                <th>Race</th>
-                <th>Profession</th>
-                <th>Level</th>
-                <th>Birthday</th>
-                <th>Banned</th>
-                <th>Edit</th>
-                <th>Delete</th>-->
+
             </tr>
         </table>
 
@@ -60,37 +50,14 @@
             <div class="create__group">
                 <label for="input_status_new">Status:</label>
                 <select class="create__select" id="input_status_new" name='status'>
-                    <!--<option value='HUMAN'>HUMAN</option>
-                    <option value='DWARF'>DWARF</option>
-                    <option value='ELF'>ELF</option>
-                    <option value='GIANT'>GIANT</option>
-                    <option value='ORC'>ORC</option>
-                    <option value='TROLL'>TROLL</option>
-                    <option value='HOBBIT'>HOBBIT</option>-->
+
             <option value='NOT_STARTED'>NOT_STARTED</option>
             <option value='IN_PROGRESS'>IN_PROGRESS</option>
             <option value='DONE'>DONE</option>
 
         </select>
     </div>
-    <!--
-    <div class="create__group">
-        <label for="input_profession_new">Profession:</label>
-        <select class="create__select" id="input_profession_new" name='profession'>
-            <option value='WARRIOR'>WARRIOR</option>
-            <option value='ROGUE'>ROGUE</option>
-            <option value='SORCERER'>SORCERER</option>
-            <option value='CLERIC'>CLERIC</option>
-            <option value='PALADIN'>PALADIN</option>
-            <option value='NAZGUL'>NAZGUL</option>
-            <option value='WARLOCK'>WARLOCK</option>
-            <option value='DRUID'>DRUID</option>
-        </select>
-    </div>
-    <div class="create__group">
-        <label for="input_level_new">Level:</label>
-        <input class="create__input" type="number" id="input_level_new" name="level" min="0" max="100">
-    </div>-->
+
     <div class="create__group">
         <label for="input_expiration_new">Expiration:</label>
         <input class="create__input" type="date" id="input_expiration_new" name="expiration" min="2000-01-01" max="3000-12-31">
@@ -107,14 +74,7 @@
         <label for="input_tags_new">UserName:</label>
         <input class="create__input" type="text" id="input_user_name_new" name="name" required maxlength="50">
     </div>
-    <!--
-    <div class="create__group">
-        <label for="input_banned_new">Banned:</label>
-        <select class="create__select" id="input_banned_new" name='banned'>
-            <option value='false'>false</option>
-            <option value='true'>true</option>
-        </select>
-    </div>-->
+
     <div class="create__group">
         <span>
             <button type="submit" onclick='createAcc()'>Create
@@ -125,7 +85,7 @@
 </div>
 <script>
     function showList(page_number) {
-        let url = "http://localhost:8080/task" //"/rest/players?";//removedLine
+        let url = "/task" ;
         console.log("showList input page_number="+page_number);
         let countPerPage = $("#count_1").val();
         if (countPerPage === null) {
@@ -135,17 +95,12 @@
 
         if (page_number !== null) {
             url = url.concat("&pageNumber=").concat(page_number);
-        }//removedLine
+        }
 
         $.get(url, function (response) {
             // remove all existing rows
             $("tr:has(td)").remove();
-//[{"task_id":1,"name":"do job",
-// "createDate":1724685783913,"startDate":1549152000000,"endDate":1580515200000,
-// "status":"NOT_STARTED","title":"titleOne","tag":[{"tag_id":1,"str":"tag1,tag2","task":null}]},
-// {"task_id":2,"name":"jimmy","createDate":1724689141179,"startDate":1595376000000,"endDate":1601164800000,
-// "status":"NOT_STARTED","title":"another second job","tag":[{"tag_id":2,"str":"tagNumberOne","task":null}]}]
-            //arr accounts data
+
             $.each(response, function (i, item) {
                 let tag_string="";
                 item.tag.forEach((elem)=>tag_string+=elem.str+" ");
@@ -159,8 +114,7 @@
                     + item.name + "</td><td>"
                     + item.title + "</td><td>"
                     + item.status + "</td><td>"
-                   // + item.profession + "</td><td>"
-                    //+ item.level + "</td><td>"
+
                     + new Date(item.endDate).toLocaleDateString() + "</td><td>"
                     + new Date(item.startDate).toLocaleDateString() + "</td><td>"
                     //+ item.banned + "</td><td>"
@@ -205,7 +159,7 @@
     function getTotalCount() {
         let value = 1;
         $.ajax({
-            url: "http://localhost:8080/task/count",
+            url: "/task/count",
             async: false,
             success: function (result) {
                 value = result;
@@ -213,36 +167,24 @@
         });
         return parseInt(value);
     }
-
-/*    function deleteAcc(id) {
-        //У меня по другому
-        let url = "http://localhost:8080/task/" + id;
-        $.ajax({
-            url: url,
-            type: 'DELETE',
-            success: function () {
-                showList(getCurrentPage());
-            }
-        });
-    }
-*/    function deleteAcc(id) {
+    function deleteAcc(id) {
         let identifier_delete = "#button_delete_" + id;
         let current_tr_element = $(identifier_delete).parent().parent();
         let children = current_tr_element.children();
 
 
-        let value_id = children[0].innerHTML;//$("#input_id_"+id).val();
-        let value_name = children[1].innerHTML;//$("#input_name_" + id).val();
-        let value_title = children[2].innerHTML;//$("#input_title_" + id).val();
-        let value_status = children[3].innerHTML;//$("#select_race_" + id).val();
-        let value_end_field = children[4].innerHTML;//$("#input_end_change_" + id).val();
+        let value_id = children[0].innerHTML;
+        let value_name = children[1].innerHTML;
+        let value_title = children[2].innerHTML;
+        let value_status = children[3].innerHTML;
+        let value_end_field = children[4].innerHTML;
         let value_end = new Date(value_end_field).getTime();
-        //console.log("value_end"+value_end_field);
-        let value_start_field = children[5].innerHTML;//$("#input_start_change_" + id).val();
-        let value_start = new Date(value_start_field).getTime();
-        let value_tag= children[6].innerHTML;//$("#input_tag_" + id).val();
 
-        let url = "http://localhost:8080/task"; //rest/players/" + id;removedLine
+        let value_start_field = children[5].innerHTML;
+        let value_start = new Date(value_start_field).getTime();
+        let value_tag= children[6].innerHTML;
+
+        let url = "/task";
         $.ajax({
             url: url,
             type: 'DELETE',
@@ -288,18 +230,7 @@
         td_status.innerHTML = getDropdownStatusHtml(id);
         $(status_id).val(status_current_value).change();
 
-        /*        let td_profession = children[4];
-                let profession_id = "#select_profession_" + id;
-                let profession_current_value = td_profession.innerHTML;
-                td_profession.innerHTML = getDropdownProfessionHtml(id);
-                $(profession_id).val(profsion_current_value).change();
-        /*<input class="create__input" type="date" id="input_starting_new" name="creation" min="2000-01-01" max="3000-12-31">
-                let td_banned = children[7];
-                let banned_id = "#select_banned_" + id;
-                let banned_current_value = td_banned.innerHTML;
-                td_banned.innerHTML = getDropdownBannedHtml(id);
-                $(banned_id).val(banned_current_value).change();
-        */
+
         let td_end_date=children[4];
         const str4=td_end_date.innerHTML;
         let parts4 = str4.split("/");
@@ -310,8 +241,6 @@
         let parts5 = str5.split("/");
         td_start_date.innerHTML= '<input className="create__input" type="date" id="input_start_change_'+id+ '" name="creation" min="2000-01-01" max="3000-12-31">';
         document.getElementById("input_start_change_"+id).valueAsDate = new Date(parseInt(parts5[2]),parseInt(parts5[0])-1,parseInt(parts5[1])+1);
-        //console.log("parsed"+new Date(parts[2],parseInt(parts[0])+1,parts[1]));td_start_date.innerHTML.substring()
-        //console.log("d+"+d+" td_start_date="+td_start_date+" ")
         let td_tags = children[6];
         td_tags.innerHTML = "<input id='input_tag_" + id + "' type='text' value='" + td_tags.innerHTML + "'>";
     }
@@ -323,13 +252,12 @@
         let value_status = $("#select_status_" + id).val();
         let value_end_field = $("#input_end_change_" + id).val();
         let value_end = new Date(value_end_field).getTime();
-        //console.log("value_end"+value_end_field);
         let value_start_field = $("#input_start_change_" + id).val();
         let value_start = new Date(value_start_field).getTime();
         let value_tag= $("#input_tag_" + id).val();
 
 
-        let url = "http://localhost:8080/task"; //rest/players/" + id;removedLine
+        let url = "/task";
         $.ajax({
             url: url,
             type: 'PUT',
@@ -348,20 +276,15 @@
         let value_name = $("#input_name_new").val();
         let value_title = $("#input_title_new").val();
         let value_status = $("#input_status_new").val();
-        //let value_profession = $("#input_profession_new").val();
-        //let value_level = $("#input_level_new").val();
         let expiration_date = $("#input_expiration_new").val();
         let datetime = new Date(expiration_date).getTime();
         let starting_date = $("#input_starting_new").val();
         let datetime_start = new Date(starting_date).getTime();
-        //let value_banned = $("#input_banned_new").val();
         let value_tags = $("#input_tags_new").val();
         let value_userName=$("#input_user_name_new").val();
         let current_page = window.location.href;
 
-        //ST//////////////////////////////////////////////////////////////////////////////////
-        let url = "http://localhost:8080/task"; //rest/players/" + id;removedLine let url = "/rest/players/";
-        //{"task_id":1,"name":"wash shoes","createDate":null,"startDate":null,"endDate":null,"status":null,"title":null,"tag":[{"tag_id":1,"str":"hallowu","task":null}]}
+        let url = "/task";
         $.ajax({
             url: url,
             type: 'POST',
@@ -369,7 +292,6 @@
             contentType: 'application/json;charset=UTF-8',
             async: false,
             data:JSON.stringify({"name":value_name,"title":value_title,"endDate":expiration_date,"startDate":starting_date,"status":value_status,"tag":[{"str":value_tags}],"user":{"userName":value_userName}}),
-            //data: JSON.stringify({"name": value_name, "title": value_title, "race": value_race, "profession": value_profession, "level": value_level, "birthday": datetime, "banned": value_banned}),
             success: function () {
                 $("#input_name_new").val("");
                 $("#input_title_new").val("");
@@ -378,14 +300,7 @@
                 $("#input_starting_new").val("");
                 $("#input_tags_new").val("");
                 $("#input_user_name_new").val("");
-                /*("#input_name_new").val("");
-                $("#input_title_new").val("");
-                $("#input_status_new").val();
-                $("#input_profession_new").val();
-                $("#input_level_new").val("");
-                $("#input_expiration_new").val("");
-                $("#input_banned_new").val(false);
-                */
+
                 showList(getCurrentPage());
             }
         });
@@ -408,14 +323,7 @@
         let status_id = "select_status_" + id;
         return "<label for='status'></label>"
             + "<select id=" + status_id + " name='status'>"
-    /*        + "<option value='HUMAN'>HUMAN</option>"
-            + "<option value='DWARF'>DWARF</option>"
-            + "<option value='ELF'>ELF</option>"
-            + "<option value='GIANT'>GIANT</option>"
-            + "<option value='ORC'>ORC</option>"
-            + "<option value='TROLL'>TROLL</option>"
-            + "<option value='HOBBIT'>HOBBIT</option>"
-  */          + "<option value='NOT_STARTED'>NOT_STARTED</option>"
+             + "<option value='NOT_STARTED'>NOT_STARTED</option>"
             + "<option value='IN_PROGRESS'>IN_PROGRESS</option>"
             + "<option value='DONE'>DONE</option>"
             + "</select>";

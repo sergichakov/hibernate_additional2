@@ -23,7 +23,7 @@ public class TagEntity {
     private String str;
     @JsonIgnore
     @ToString.Exclude
-    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY,mappedBy = "tag")//  CascadeType.PERSIST}
+    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY,mappedBy = "tag")
     private Set<TaskEntity> task;
     public void add(TaskEntity taskEntity){
         this.task.add(taskEntity);

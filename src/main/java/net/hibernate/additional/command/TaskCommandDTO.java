@@ -19,5 +19,5 @@ public class TaskCommandDTO {
     private TaskStatus status;
     private UserCommandDTO user;
     private String title;
-    private Set<TagCommandDTO> tag;//TagEntity
+    private Set<TagCommandDTO> tag;
 }

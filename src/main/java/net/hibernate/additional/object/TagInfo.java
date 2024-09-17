@@ -8,5 +8,5 @@ public class TagInfo
 {
     private Long id;
     private String str;
-    private Set<TaskEntity> task;//=new HashSet<>();
+    private Set<TaskEntity> task;
 }

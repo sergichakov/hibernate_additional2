@@ -70,7 +70,7 @@ public class TaskService {
         if(pageSize==null)pageSize=3;
         if (pageSize>50)pageSize=50;
         if(pageNumber==null)pageNumber=0;
-                             ////new SessionRepoHelper()
+
         UserEntity userEntity=(new UserRegistrationService(sessionRepoHelper)).getUserEntity(sessionObject.getName(),sessionObject.getPassword());
         if (userEntity==null)throw new AuthenticationException("no such user="+sessionObject.getName()+" password="+sessionObject.getPassword());
         String userName= userEntity.getUserName();

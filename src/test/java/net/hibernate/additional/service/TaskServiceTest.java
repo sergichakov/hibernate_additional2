@@ -156,7 +156,7 @@ class TaskServiceTest {
             taskService.editTask(taskCommandDTO,sessionObject);
             Query titleQuery=session.createNativeQuery("select task_title from tasks t where name=:task1");
             titleQuery.setParameter("task1","task1");
-            taskChangedTitle =(String) titleQuery.list().get(0);//getSingleResult();
+            taskChangedTitle =(String) titleQuery.list().get(0);
         }
         assertEquals("TITLE_1",taskChangedTitle);
     }
@@ -215,7 +215,7 @@ class TaskServiceTest {
             Properties properties = new Properties();
             properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
             properties.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-            properties.setProperty("hibernate.connection.url", postgres.getJdbcUrl());//"jdbc:postgresql://localhost:"+postgres.getJdbcUrl()+"/postgres");
+            properties.setProperty("hibernate.connection.url", postgres.getJdbcUrl());
             properties.setProperty("hibernate.connection.username", postgres.getUsername());
             properties.setProperty("hibernate.connection.password", postgres.getPassword());
             properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");

@@ -38,16 +38,16 @@ public class TaskEntity {
     private TaskStatus status;
     @Column(name="task_title")
     private String title;
-    @OneToOne//(fetch = FetchType.LAZY)
+    @OneToOne
     private UserEntity user;
-    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY)//,mappedBy = "task")//s_set")   CascadeType.PERSIST}
+    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY)
 
     @JoinTable(name="tags_tasks",
     joinColumns=  @JoinColumn(name="tag_id", referencedColumnName="task_id"),
     inverseJoinColumns= @JoinColumn(name="task_id", referencedColumnName="tag_id") )
 
     private Set<TagEntity> tag;
-    @OneToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY,mappedBy = "task")//_of_task")
+    @OneToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY,mappedBy = "task")
     @Column(name="task_comments")
     @ToString.Exclude
     private List<CommentEntity> comments;

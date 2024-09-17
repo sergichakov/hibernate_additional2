@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-//import jakarta.servlet.annotation.
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -73,7 +73,7 @@ public class ViewListOfTasksServlet extends HttpServlet {
             logger.error("JSON processing exception");
         }
         response.setStatus(200);
-        response.setContentType("application/json");//"text/html;charset=UTF-8");
+        response.setContentType("application/json");
         PrintWriter out =  response.getWriter();
         out.println(fromDtoToJson);
         out.close();
@@ -89,7 +89,7 @@ public class ViewListOfTasksServlet extends HttpServlet {
         boolean boolSuccess=false;
         for (TaskCommandDTO taskCommand:taskCommandDto) {
             try {
-                boolSuccess = taskService.editTask(taskCommand,sessionObject);//(taskCommandDto)
+                boolSuccess = taskService.editTask(taskCommand,sessionObject);
             } catch (AuthenticationException e) {
                 response.sendError(404, e.getMessage()+sessionObject.getName()+" have wrong password or not registered");
             }catch(NoPermissionException e){
@@ -111,7 +111,7 @@ public class ViewListOfTasksServlet extends HttpServlet {
         TaskDTO taskDTO=null;
         for(TaskCommandDTO taskCommand:taskCommandDto) {
             try {
-                taskDTO = taskService.createTask(taskCommand,sessionObject);//taskCommandDto
+                taskDTO = taskService.createTask(taskCommand,sessionObject);
             } catch (AuthenticationException e) {
                 response.sendError(404, "User name "+sessionObject.getName()+" have wrong password or not registered");
             }catch(NoPermissionException e){
@@ -181,7 +181,7 @@ public class ViewListOfTasksServlet extends HttpServlet {
         boolean isSuccessFull=false;
         for(TaskCommandDTO taskCommand:taskCommandDto) {
             try{
-                isSuccessFull = taskService.deleteTask(taskCommand,sessionObject);//(taskCommandDto)
+                isSuccessFull = taskService.deleteTask(taskCommand,sessionObject);
             } catch (AuthenticationException e) {
                 response.sendError(404, "User name= "+e.getMessage()+" name="+sessionObject.getName()+" have wrong password or not registered");
             }catch(NoPermissionException e){

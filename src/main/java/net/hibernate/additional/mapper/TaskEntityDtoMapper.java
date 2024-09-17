@@ -7,7 +7,7 @@ import net.hibernate.additional.dto.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel="default",uses={TagEntityDtoMapper.class,TagEntitySetDtoSetMapper.class})
-        //CommentEntityDtoMapper.class,CommentEntitySetDtoSetMapper.class})
+
 public interface TaskEntityDtoMapper {
     TaskEntityDtoMapper INSTANCE= Mappers.getMapper(TaskEntityDtoMapper.class);
     TaskDTO toDTO(TaskEntity task);

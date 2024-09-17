@@ -7,5 +7,5 @@ import java.util.Set;
 public class TagDTO {
     private Long tag_id;
     private String str;
-    private Set<TaskDTO> task;//=new HashSet<>();
+    private Set<TaskDTO> task;
 }

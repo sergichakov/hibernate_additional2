@@ -28,7 +28,7 @@ public class UserRegistrationService {
             transaction.commit();
             session.refresh(userEntity);
         }
-        return userEntity;//true;
+        return userEntity;
     }
     public UserDTO getUserDTO(String userName, String password) throws AuthenticationException {
         UserEntity userEntity=getUserEntity(userName,password);
@@ -40,7 +40,7 @@ public class UserRegistrationService {
         if (userName == null) throw new AuthenticationException("Given userName is null= " + userName);
         UserEntity userEntity = null;
 
-        try (Session session = sessionRepoHelper.getSession().openSession()) {//join fetch ue.user_id
+        try (Session session = sessionRepoHelper.getSession().openSession()) {
             Query<UserEntity> userEntityQuery = session.createQuery("from UserEntity ue  where ue.userName = :userN", UserEntity.class);
             userEntityQuery.setParameter("userN", userName);
             List<UserEntity> listEntity = userEntityQuery.list();

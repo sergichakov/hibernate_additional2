@@ -1,7 +1,7 @@
 package net.hibernate.additional.service;
 
 import net.hibernate.additional.command.CommentCommandDTO;
-//import net.hibernate.additional.command.CommandDTO;
+
 import net.hibernate.additional.command.TaskCommandDTO;
 import net.hibernate.additional.command.UserCommandDTO;
 import net.hibernate.additional.command.mapper.CommentCommandDtoEntityMapper;
@@ -47,7 +47,7 @@ public class CommentService {
                 comments.setParameter("taskId", taskEntity);
                 comments.setParameter("userName", userName);
             }
-            comments.setOrder(Order.asc(CommentEntity.class, "user"));//user_id column
+            comments.setOrder(Order.asc(CommentEntity.class, "user"));
             commentList=comments.list();
         }
         List<CommentDTO>commentDtoList=new ArrayList<>();
@@ -57,7 +57,7 @@ public class CommentService {
         }
         return commentDtoList;
     }
-    public boolean editComment(CommentCommandDTO commentCommandDto){//},UserCommandDTO userCommandDTO){
+    public boolean editComment(CommentCommandDTO commentCommandDto){
         CommentCommandDtoEntityMapper commentCommandDtoEntityMapper=CommentCommandDtoEntityMapper.INSTANCE;
         CommentEntity commentEntity=commentCommandDtoEntityMapper.toModel(commentCommandDto);
         try(Session session = sessionRepoHelper.getSession().openSession()) {
@@ -70,8 +70,8 @@ public class CommentService {
         }
         return true;
     }
-    public void createComment(CommentCommandDTO commentCommandDTO){//}, UserCommandDTO userCommandDTO){
-        CommentCommandDtoEntityMapper commentCommandToEntityMapper=CommentCommandDtoEntityMapper.INSTANCE;//new TaskCommandDtoEntityMapperImpl() ;
+    public void createComment(CommentCommandDTO commentCommandDTO){
+        CommentCommandDtoEntityMapper commentCommandToEntityMapper=CommentCommandDtoEntityMapper.INSTANCE;
         CommentEntity commentEntity=commentCommandToEntityMapper.toModel(commentCommandDTO);
         try(Session session = sessionRepoHelper.getSession().openSession()){
             Transaction transaction=session.beginTransaction();
@@ -79,8 +79,8 @@ public class CommentService {
             transaction.commit();
         }
     }
-    public boolean deleteComment(CommentCommandDTO commandDTO){//},UserCommandDTO userCommandDTO){
-        CommentCommandDtoEntityMapper commandToEntityMapper=CommentCommandDtoEntityMapper.INSTANCE;//new TaskCommandDtoEntityMapperImpl() ;
+    public boolean deleteComment(CommentCommandDTO commandDTO){
+        CommentCommandDtoEntityMapper commandToEntityMapper=CommentCommandDtoEntityMapper.INSTANCE;
         CommentEntity commentEntity=commandToEntityMapper.toModel(commandDTO);
         try(Session session = sessionRepoHelper.getSession().openSession()) {
             Transaction transaction=session.beginTransaction();
