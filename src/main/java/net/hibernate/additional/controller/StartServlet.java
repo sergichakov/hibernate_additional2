@@ -17,24 +17,19 @@ import java.io.IOException;
 
 @WebServlet(name = "startServlet", value = "/start")
 public class StartServlet extends HttpServlet {
+    private volatile Logger logger = null;
     public void init() {
-        Logger logger = LoggerFactory.getLogger(ViewListOfTasksServlet.class);
-        ServletContext servletContext = getServletContext();
-        servletContext.setAttribute("logger", logger);
-        TaskService taskService = new TaskService(new SessionRepoHelper());
-        servletContext.setAttribute("service", taskService);
+        logger = LoggerFactory.getLogger(ViewListOfTasksServlet.class);
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
         HttpSession currentSession = request.getSession();
         SessionObject sessionObject=(SessionObject) currentSession.getAttribute("session");
         request.setAttribute("ObjectUserName",sessionObject.getName());
-        String pageNumber = request.getParameter("pageNumber");
-        String pageSize = request.getParameter("pageSize");
         if(sessionObject != null&& ! sessionObject.getName().equals("ADMIN")) {
             String hideForm = " hidden='true' ";
             request.setAttribute("hideForm", hideForm);
         }
+        logger.info("Somebody become to the page" );
         request.getRequestDispatcher("/html/editingTask.jsp").include(request, response);
     }
 }

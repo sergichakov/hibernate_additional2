@@ -33,24 +33,19 @@ import java.util.stream.Collectors;
 
 @WebServlet(name = "viewRequestServlet", value = "/task")
 public class ViewListOfTasksServlet extends HttpServlet {
-
+    private volatile Logger logger;
+    private volatile TaskService taskService;
     public void init() {
-        Logger logger = LoggerFactory.getLogger(ViewListOfTasksServlet.class);
-        ServletContext servletContext = getServletContext();
-        servletContext.setAttribute("logger", logger);
-        TaskService taskService = new TaskService(new SessionRepoHelper());
-        servletContext.setAttribute("service", taskService);
+        logger = LoggerFactory.getLogger(ViewListOfTasksServlet.class);
+        taskService = new TaskService(new SessionRepoHelper());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
         HttpSession currentSession = request.getSession();
         String pageNumber = request.getParameter("pageNumber");
         String pageSize = request.getParameter("pageSize");
         SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
-        Logger logger = (Logger) servletContext.getAttribute("logger");
         String workerName = "";
         if (sessionObject == null) {
             sessionObject = SessionObject.builder()
@@ -59,7 +54,6 @@ public class ViewListOfTasksServlet extends HttpServlet {
             currentSession.setAttribute("session", sessionObject);
         } else {
             workerName = sessionObject.getName();
-
         }
         List<TaskDTO> taskDTOList = null;
         try {
@@ -84,12 +78,9 @@ public class ViewListOfTasksServlet extends HttpServlet {
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
         HttpSession currentSession = request.getSession();
         SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
         List<TaskCommandDTO> taskCommandDto = jacksonProcessing(request);
-
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
         boolean boolSuccess = false;
         for (TaskCommandDTO taskCommand : taskCommandDto) {
             try {
@@ -109,11 +100,8 @@ public class ViewListOfTasksServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
         HttpSession currentSession = request.getSession();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
         SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
         List<TaskCommandDTO> taskCommandDto = jacksonProcessing(request);
         TaskDTO taskDTO = null;
         for (TaskCommandDTO taskCommand : taskCommandDto) {
@@ -139,12 +127,7 @@ public class ViewListOfTasksServlet extends HttpServlet {
     }
 
     private List<TaskCommandDTO> jacksonProcessing(HttpServletRequest request) throws IOException {
-        ServletContext servletContext = getServletContext();
-        HttpSession currentSession = request.getSession();
-        SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
         BufferedReader buffer = request.getReader();
-
         String json = buffer.lines().collect(Collectors.joining());
         ObjectMapper objectMapper = new ObjectMapper();
         TaskCommandDTO taskCommandDto = null;
@@ -181,11 +164,8 @@ public class ViewListOfTasksServlet extends HttpServlet {
 
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
         HttpSession currentSession = request.getSession();
         SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
         List<TaskCommandDTO> taskCommandDto = jacksonProcessing(request);
         logger.info("deletion DTO=" + taskCommandDto);
         boolean isSuccessFull = false;

@@ -13,15 +13,17 @@ import org.hibernate.query.Query;
 import java.util.List;
 
 public class UserRegistrationService {
-    private volatile SessionRepository sessionRepoHelper=null;
-    public UserRegistrationService(SessionRepository sessionRepoHelper){
-        this.sessionRepoHelper=sessionRepoHelper;
+    private volatile SessionRepository sessionRepoHelper = null;
+
+    public UserRegistrationService(SessionRepository sessionRepoHelper) {
+        this.sessionRepoHelper = sessionRepoHelper;
     }
-    public UserEntity registerUser(String userName, String password){
-        UserEntity userEntity=null;
-        try(Session session= sessionRepoHelper.getSession().openSession()){
-            Transaction transaction=session.beginTransaction();
-            userEntity=new UserEntity();
+
+    public UserEntity registerUser(String userName, String password) {
+        UserEntity userEntity = null;
+        try (Session session = sessionRepoHelper.getSession().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            userEntity = new UserEntity();
             userEntity.setUserName(userName);
             userEntity.setPassword(password);
             session.persist(userEntity);
@@ -30,14 +32,18 @@ public class UserRegistrationService {
         }
         return userEntity;
     }
+
     public UserDTO getUserDTO(String userName, String password) throws AuthenticationException {
-        UserEntity userEntity=getUserEntity(userName,password);
-        UserEntityDtoMapper userEntityDtoMapper=UserEntityDtoMapper.INSTANCE;
-        UserDTO userDTO=userEntityDtoMapper.toDTO(userEntity);
+        UserEntity userEntity = getUserEntity(userName, password);
+        UserEntityDtoMapper userEntityDtoMapper = UserEntityDtoMapper.INSTANCE;
+        UserDTO userDTO = userEntityDtoMapper.toDTO(userEntity);
         return userDTO;
     }
-    public UserEntity getUserEntity(String userName,String password) throws AuthenticationException {
-        if (userName == null) throw new AuthenticationException("Given userName is null= " + userName);
+
+    public UserEntity getUserEntity(String userName, String password) throws AuthenticationException {
+        if (userName == null) {
+            throw new AuthenticationException("Given userName is null= " + userName);
+        }
         UserEntity userEntity = null;
 
         try (Session session = sessionRepoHelper.getSession().openSession()) {
@@ -48,7 +54,9 @@ public class UserRegistrationService {
                 userEntity = userEntityQuery.list().get(0);
             }
             if (userEntity == null) {
-                if (password==null|| password.isEmpty())return null;
+                if (password == null || password.isEmpty()) {
+                    return null;
+                }
                 userEntity = registerUser(userName, password);
                 return userEntity;
             }
@@ -56,7 +64,7 @@ public class UserRegistrationService {
                 if (password == null || password.isEmpty()) {
                     throw new AuthenticationException("stored password and given is Null");
                 } else {
-                    Transaction transaction=session.beginTransaction();
+                    Transaction transaction = session.beginTransaction();
                     userEntity.setPassword(password);
                     session.persist(userEntity);
                     transaction.commit();

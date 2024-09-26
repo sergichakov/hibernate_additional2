@@ -18,30 +18,27 @@ import org.slf4j.LoggerFactory;
 
 @WebServlet(name = "registerServlet", value = "/register")
 public class RegisterServlet extends HttpServlet {
+    private volatile Logger logger=null;
     @Override
     public void init() throws ServletException {
         super.init();
-        Logger logger = LoggerFactory.getLogger(RegisterServlet.class);
-        ServletContext servletContext = getServletContext();
-        servletContext.setAttribute("logger",logger);
+        logger = LoggerFactory.getLogger(RegisterServlet.class);
     }
+
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-
         HttpSession currentSession = request.getSession();
-        ServletContext servletContext = getServletContext();
-        Logger logger=(Logger) servletContext.getAttribute("logger");
-        SessionObject sessionObject=(SessionObject) currentSession.getAttribute("session");
-        String userName=request.getParameter("userName");
-        String password=request.getParameter("password");
-        logger.info("The "+userName+" User is registered");
-        if(userName==null||password==null||userName.isEmpty()) {
-            if(sessionObject==null) {
+        SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
+        String userName = request.getParameter("userName");
+        String password = request.getParameter("password");
+        logger.info("The " + userName + " User is registered");
+        if (userName == null || password == null || userName.isEmpty()) {
+            if (sessionObject == null) {
                 request.setAttribute("pleaseEnterUserNamePassword", "Please Enter UserName and Password");
                 request.getRequestDispatcher("/register.jsp").include(request, response);
                 return;
             }
-        }else{
+        } else {
             if (sessionObject == null) {
                 sessionObject = SessionObject.builder()
                         .sessionId(currentSession.getId())
@@ -49,27 +46,27 @@ public class RegisterServlet extends HttpServlet {
                         .password(password)
                         .build();
                 currentSession.setAttribute("session", sessionObject);
-            }else{
+            } else {
                 sessionObject.setName(userName);
                 sessionObject.setPassword(password);
                 logger.info("registerServlet set username and password");
             }
         }
-        UserRegistrationService userRegistrationService=new UserRegistrationService(new SessionRepoHelper());
-        UserDTO isAuth= null;
+        UserRegistrationService userRegistrationService = new UserRegistrationService(new SessionRepoHelper());
+        UserDTO isAuth = null;
         try {
-            isAuth = userRegistrationService.getUserDTO(userName,password);
+            isAuth = userRegistrationService.getUserDTO(userName, password);
         } catch (AuthenticationException e) {
             request.getRequestDispatcher("/register.jsp").include(request, response);
-            return ;
+            return;
         }
-        String isAuthString="NoName";
-        if (isAuth==null){
-            userRegistrationService.registerUser(userName,password);
-        }else{
-            isAuthString=isAuth.getUserName();
+        String isAuthString = "NoName";
+        if (isAuth == null) {
+            userRegistrationService.registerUser(userName, password);
+        } else {
+            isAuthString = isAuth.getUserName();
         }
-        request.setAttribute("ObjectUserName",""+isAuthString);
+        request.setAttribute("ObjectUserName", "" + isAuthString);
         request.getRequestDispatcher("/register.jsp").include(request, response);
     }
 }

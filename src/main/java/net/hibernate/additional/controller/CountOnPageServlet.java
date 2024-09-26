@@ -19,15 +19,16 @@ import java.io.PrintWriter;
 
 @WebServlet(name = "countServlet", value = "/task/count")
 public class CountOnPageServlet extends HttpServlet {
+    private volatile TaskService taskService = null;
     public void init() {
-        ServletContext servletContext = getServletContext();
-        TaskService taskService = new TaskService(new SessionRepoHelper());
-        servletContext.setAttribute("service", taskService);
+
+        taskService = new TaskService(new SessionRepoHelper());
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
-        TaskService taskService = (TaskService) servletContext.getAttribute("service");
+
+
         HttpSession currentSession = request.getSession();
         SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
         Integer count = null;

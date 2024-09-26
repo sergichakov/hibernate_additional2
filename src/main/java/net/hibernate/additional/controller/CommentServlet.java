@@ -31,35 +31,18 @@ import java.util.stream.Collectors;
 
 @WebServlet(name = "CommentServlet", value = "/comment")
 public class CommentServlet extends HttpServlet {
+    private volatile Logger logger = null;
+    private volatile CommentService commentService;
+    private volatile UserRegistrationService registerService;
     public void init() {
-        Logger logger = LoggerFactory.getLogger(CommentServlet.class);
-        ServletContext servletContext = getServletContext();
-        servletContext.setAttribute("logger", logger);
-
-
-        CommentService commentService = new CommentService(new SessionRepoHelper());
-        servletContext.setAttribute("service", commentService);
-        UserRegistrationService registerService = new UserRegistrationService(new SessionRepoHelper());
-        servletContext.setAttribute("registerService", registerService);
+        logger = LoggerFactory.getLogger(CommentServlet.class);
+        commentService = new CommentService(new SessionRepoHelper());
+        registerService = new UserRegistrationService(new SessionRepoHelper());
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession currentSession = request.getSession();
-        ServletContext servletContext = getServletContext();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
-        CommentService commentService = (CommentService) servletContext.getAttribute("service");
-        BufferedReader buffer = request.getReader();
-
-        String json = buffer.lines().collect(Collectors.joining());
         ObjectMapper objectMapper = new ObjectMapper();
-        CommentCommandDTO commentCommandDto = null;
-        try {
-            commentCommandDto = objectMapper.readValue(json, CommentCommandDTO.class);
-        } catch (JsonMappingException e) {
-            throw new IOException("Cant map JSon file", e);
-        } catch (JsonProcessingException e) {
-            throw new IOException("Cant process JSon file", e);
-        }
+        CommentCommandDTO commentCommandDto=getCommentCommandDtoFromRequest(request);
         List<CommentDTO> commentDTOList = commentService.listAllComments(commentCommandDto.getTask(), null);
         String fromDtoToJson = "";
         try {
@@ -68,7 +51,6 @@ public class CommentServlet extends HttpServlet {
             logger.error("JSON processing exception");
         }
         response.setStatus(200);
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         out.println(fromDtoToJson);
@@ -76,49 +58,21 @@ public class CommentServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession currentSession = request.getSession();
-        ServletContext servletContext = getServletContext();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
-        CommentService commentService = (CommentService) servletContext.getAttribute("service");
-        BufferedReader buffer = request.getReader();
-        String json = buffer.lines().collect(Collectors.joining());
-        ObjectMapper objectMapper = new ObjectMapper();
-        CommentCommandDTO commentCommandDto = null;
-        try {
-            commentCommandDto = objectMapper.readValue(json, CommentCommandDTO.class);
-        } catch (JsonMappingException e) {
-            throw new IOException("Cant map JSon file", e);
-        } catch (JsonProcessingException e) {
-            throw new IOException("Cant process JSon file", e);
-        }
-        SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
+        CommentCommandDTO commentCommandDto=getCommentCommandDtoFromRequest(request);
         commentService.createComment(commentCommandDto);
     }
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession currentSession = request.getSession();
-        ServletContext servletContext = getServletContext();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
-        CommentService commentService = (CommentService) servletContext.getAttribute("service");
-        BufferedReader buffer = request.getReader();
-        String json = buffer.lines().collect(Collectors.joining());
-        ObjectMapper objectMapper = new ObjectMapper();
-        CommentCommandDTO commentCommandDto = null;
-        try {
-            commentCommandDto = objectMapper.readValue(json, CommentCommandDTO.class);
-        } catch (JsonMappingException e) {
-            throw new IOException("Cant map JSon file", e);
-        } catch (JsonProcessingException e) {
-            throw new IOException("Cant process JSon file", e);
-        }
+        CommentCommandDTO commentCommandDto=getCommentCommandDtoFromRequest(request);
         commentService.editComment(commentCommandDto);
     }
 
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession currentSession = request.getSession();
-        ServletContext servletContext = getServletContext();
-        Logger logger = (Logger) servletContext.getAttribute("logger");
-        CommentService commentService = (CommentService) servletContext.getAttribute("service");
+        CommentCommandDTO commentCommandDto=getCommentCommandDtoFromRequest(request);
+        commentService.deleteComment(commentCommandDto);
+    }
+
+    private CommentCommandDTO getCommentCommandDtoFromRequest(HttpServletRequest request) throws IOException {
         BufferedReader buffer = request.getReader();
         String json = buffer.lines().collect(Collectors.joining());
         ObjectMapper objectMapper = new ObjectMapper();
@@ -130,6 +84,6 @@ public class CommentServlet extends HttpServlet {
         } catch (JsonProcessingException e) {
             throw new IOException("Cant process JSon file", e);
         }
-        commentService.deleteComment(commentCommandDto);
+        return commentCommandDto;
     }
 }

@@ -126,7 +126,9 @@ public class TaskService {
             taskEntity.setCreateDate(dateOfCreation);
             taskEntity.setUser(userEntity);
             session.merge(taskEntity);
-            if (taskId != null) hasChanged = true;
+            if (taskId != null) {
+                hasChanged = true;
+            }
             hasChanged = true;
             transaction.commit();
         } catch (ConstraintViolationException e) {
@@ -207,7 +209,7 @@ public class TaskService {
         try (Session session = sessionRepoHelper.getSession().openSession()) {
             NativeQuery<Long> lon = session.createNativeQuery("select tag_id from tags where str=:tagStr", Long.class);
             lon.setParameter("tagStr", tagStr);
-            l = lon.getSingleResultOrNull();  //list().get(0)
+            l = lon.getSingleResultOrNull();
         }
         if (singleTagId != null) {
             logger.info("for tag=" + tagStr + " found number=" + singleTagId);

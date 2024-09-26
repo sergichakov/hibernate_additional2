@@ -44,7 +44,7 @@ public class TaskServiceTest {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withUsername("anton")
             .withPassword("anton")
-            .withReuse(true)        //testcontainers.reuse.enable=true
+            //.withReuse(true)        //testcontainers.reuse.enable=true
             .withDatabaseName("postgres");
 
     public static void createTableConsistency() {
@@ -81,8 +81,7 @@ public class TaskServiceTest {
 
     @AfterAll
     static void afterAll() {
-
-        //postgres.stop();
+        postgres.stop();
     }
 
     @BeforeEach
@@ -137,7 +136,7 @@ public class TaskServiceTest {
         }
     }
 
-//    @AfterEach////////////////////////////////
+    @AfterEach
     void tearDown() throws SQLException, LiquibaseException {
         Connection connection = DriverManager.getConnection(
                 postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
@@ -190,9 +189,6 @@ public class TaskServiceTest {
             TaskCommandDtoEntityMapper commandToEntityMapper = TaskCommandDtoEntityMapper.INSTANCE;
             taskCommandDTO = commandToEntityMapper.toDTO(taskEntity);
             session.evict(taskEntity);
-            //taskService.deleteTask(taskCommandDTO, sessionObject);
-            //Query<TaskEntity> empty = session.createQuery("from TaskEntity", TaskEntity.class);
-            //emptiNess = empty.list().size();
         }
         taskService.deleteTask(taskCommandDTO, sessionObject);
         try (Session session = new SessionRepo().getSession().openSession()) {
