@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Set;
 @Data
 public class TagDTO {
-    private Long tag_id;
+    private Long tagId;
     private String str;
     private Set<TaskDTO> task;
 }

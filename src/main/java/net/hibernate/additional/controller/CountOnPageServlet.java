@@ -21,23 +21,24 @@ import java.io.PrintWriter;
 public class CountOnPageServlet extends HttpServlet {
     public void init() {
         ServletContext servletContext = getServletContext();
-        TaskService taskService=new TaskService(new SessionRepoHelper());
-        servletContext.setAttribute("service",taskService);
+        TaskService taskService = new TaskService(new SessionRepoHelper());
+        servletContext.setAttribute("service", taskService);
     }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletContext servletContext = getServletContext();
-        TaskService taskService=(TaskService) servletContext.getAttribute("service");
+        TaskService taskService = (TaskService) servletContext.getAttribute("service");
         HttpSession currentSession = request.getSession();
-        SessionObject sessionObject=(SessionObject) currentSession.getAttribute("session");
-        Integer count= null;
+        SessionObject sessionObject = (SessionObject) currentSession.getAttribute("session");
+        Integer count = null;
         try {
             count = taskService.getAllCount(sessionObject);
         } catch (AuthenticationException e) {
-            response.sendError(404, "User name "+sessionObject.getName()+" have wrong password or not registered");
-        }catch(NoPermissionException e){
-            response.sendError(404, "User name "+sessionObject.getName()+" but need ADMIN permission");
+            response.sendError(404, "User name " + sessionObject.getName() + " have wrong password or not registered");
+        } catch (NoPermissionException e) {
+            response.sendError(404, "User name " + sessionObject.getName() + " but need ADMIN permission");
         }
-        PrintWriter out =  response.getWriter();
+        PrintWriter out = response.getWriter();
         out.println(count);
     }
 }

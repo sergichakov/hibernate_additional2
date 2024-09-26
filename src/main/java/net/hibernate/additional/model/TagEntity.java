@@ -10,22 +10,24 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+//@Data
 @ToString
 @Builder
 @Entity
-@Table(name="tags")
+@Table(name = "tags")
 public class TagEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tag_id")
-    private Long tag_id;
-    @Column (name="str", length=100)
+    private Long tagId;
+    @Column(name = "str", length = 100)
     private String str;
     @JsonIgnore
     @ToString.Exclude
-    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY,mappedBy = "tag")
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY, mappedBy = "tag")
     private Set<TaskEntity> task;
-    public void add(TaskEntity taskEntity){
+
+    public void add(TaskEntity taskEntity) {
         this.task.add(taskEntity);
     }
 
@@ -34,8 +36,8 @@ public class TagEntity {
         if (!(o instanceof TagEntity)) return false;
         final TagEntity other = (TagEntity) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$tag_id = this.getTag_id();
-        final Object other$tag_id = other.getTag_id();
+        final Object this$tag_id = this.getTagId();
+        final Object other$tag_id = other.getTagId();
         if (this$tag_id == null ? other$tag_id != null : !this$tag_id.equals(other$tag_id)) return false;
         final Object this$str = this.getStr();
         final Object other$str = other.getStr();
@@ -51,10 +53,12 @@ public class TagEntity {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $tag_id = this.getTag_id();
+        final Object $tag_id = this.getTagId();
         result = result * PRIME + ($tag_id == null ? 43 : $tag_id.hashCode());
         final Object $str = this.getStr();
         result = result * PRIME + ($str == null ? 43 : $str.hashCode());
         return result;
     }
+
+
 }

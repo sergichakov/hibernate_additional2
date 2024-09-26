@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserDTO {
-    private Long user_id;
+    private Long userId;
     private String userName;
     private TaskDTO task;
 }

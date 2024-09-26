@@ -7,11 +7,12 @@ import net.hibernate.additional.object.TaskStatus;
 
 import java.util.Date;
 import java.util.Set;
+
 @Setter
 @Data
 @Getter
 public class TaskDTO {
-    private Long task_id;
+    private Long taskId;
     private String name;
     private Date createDate;
     private Date startDate;

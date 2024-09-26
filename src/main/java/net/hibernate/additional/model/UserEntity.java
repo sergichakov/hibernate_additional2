@@ -2,19 +2,8 @@ package net.hibernate.additional.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
-import org.hibernate.engine.spi.Mapping;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.type.BasicType;
-import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,7 +18,8 @@ import java.util.Objects;
 public class  UserEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE )
-    private Long user_id;
+    @Column(name= "user_id")
+    private Long userId;
     @Column(name="user_name",length=100)
     private String userName;
     @Column(name="password",length=100)

@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TagCommandDTO {
-    private Long tag_id;
+    private Long tagId;
     private String str;
     private Set<TaskEntity> task;
 }

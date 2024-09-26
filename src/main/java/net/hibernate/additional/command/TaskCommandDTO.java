@@ -11,7 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder(toBuilder=true)
 public class TaskCommandDTO {
-    private Long task_id;
+    private Long taskId;
     private String name;
     private Date createDate;
     private Date startDate;

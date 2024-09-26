@@ -110,7 +110,7 @@
                     userNameLocal=userN.userName;
                 }
                 $('<tr>').html("<td>"
-                    + item.task_id + "</td><td>"
+                    + item.taskId + "</td><td>"
                     + item.name + "</td><td>"
                     + item.title + "</td><td>"
                     + item.status + "</td><td>"
@@ -120,10 +120,10 @@
                     //+ item.banned + "</td><td>"
                      +   tag_string + "</td><td>"
                     + userNameLocal+ "</td><td>"
-                    + "<button id='button_edit_" + item.task_id + "' ${hideForm} onclick='editAcc(" + item.task_id + ")'>" //было item.id
+                    + "<button id='button_edit_" + item.taskId + "' ${hideForm} onclick='editAcc(" + item.taskId + ")'>" //было item.id
                     + "<img src='/img/edit.png' class='img_edit'>"
                     + "</button>" + "</td><td>"
-                    + "<button id='button_delete_" + item.task_id + "' ${hideForm} onclick='deleteAcc(" + item.task_id + ")'>"
+                    + "<button id='button_delete_" + item.taskId + "' ${hideForm} onclick='deleteAcc(" + item.taskId + ")'>"
                     + "<img src='/img/delete.png' class='img_delete'>"
                     + "</button>" + "</td>")
                     .appendTo('#table_1');console.log("_____________");console.log("item_tag_="+item.tag["str"]);
@@ -191,7 +191,7 @@
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
             async: false,
-            data: JSON.stringify({"task_id":value_id,"name": value_name, "title": value_title, "status": value_status, "endDate": value_end, "startDate": value_start,"tag":[{"str":value_tag}] }),
+            data: JSON.stringify({"taskId":value_id,"name": value_name, "title": value_title, "status": value_status, "endDate": value_end, "startDate": value_start,"tag":[{"str":value_tag}] }),
             success: function () {
                 showList(getCurrentPage());
             }
@@ -264,7 +264,7 @@
             dataType: 'json',
             contentType: 'application/json;charset=UTF-8',
             async: false,
-            data: JSON.stringify({"task_id":value_id,"name": value_name, "title": value_title, "status": value_status, "endDate": value_end, "startDate": value_start,"tag":[{"str":value_tag}] }),
+            data: JSON.stringify({"taskId":value_id,"name": value_name, "title": value_title, "status": value_status, "endDate": value_end, "startDate": value_start,"tag":[{"str":value_tag}] }),
             success: function () {
                 showList(getCurrentPage());
             }

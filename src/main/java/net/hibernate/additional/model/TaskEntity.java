@@ -11,48 +11,48 @@ import java.util.Set;
 
 @Getter
 @Setter
+//@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
 @Entity
-@Table(name="tasks")
+@Table(name = "tasks")
 public class TaskEntity {
     @Id
-    @Column(name="task_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
-
-    private Long task_id;
+    @Column(name = "task_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long taskId;
     private String name;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private Date createDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="start_date")
+    @Column(name = "start_date")
     private Date startDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="end_date")
+    @Column(name = "end_date")
     private Date endDate;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
-    @Column(name="task_title")
+    @Column(name = "task_title")
     private String title;
     @OneToOne
     private UserEntity user;
-    @ManyToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH},fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
 
-    @JoinTable(name="tags_tasks",
-    joinColumns=  @JoinColumn(name="tag_id", referencedColumnName="task_id"),
-    inverseJoinColumns= @JoinColumn(name="task_id", referencedColumnName="tag_id") )
+    @JoinTable(name = "tags_tasks",
+            joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id", referencedColumnName = "tag_id"))
 
     private Set<TagEntity> tag;
-    @OneToMany(cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY,mappedBy = "task")
-    @Column(name="task_comments")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, mappedBy = "task")
+    @Column(name = "task_comments")
     @ToString.Exclude
     private List<CommentEntity> comments;
 
-    public void addTag(TagEntity tagEntity){
+    public void addTag(TagEntity tagEntity) {
         this.tag.add(tagEntity);
     }
 
@@ -61,8 +61,8 @@ public class TaskEntity {
         if (!(o instanceof TaskEntity)) return false;
         final TaskEntity other = (TaskEntity) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$task_id = this.getTask_id();
-        final Object other$task_id = other.getTask_id();
+        final Object this$task_id = this.getTaskId();
+        final Object other$task_id = other.getTaskId();
         if (this$task_id == null ? other$task_id != null : !this$task_id.equals(other$task_id)) return false;
         final Object this$name = this.getName();
         final Object other$name = other.getName();
@@ -79,7 +79,7 @@ public class TaskEntity {
         if (this$endDate == null ? other$endDate != null : !this$endDate.equals(other$endDate)) return false;
         final Object this$status = this.getStatus();
         final Object other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !this$status.equals(other$status)) return false;
+        if (this$status == null ? other$status != null : !this$status.toString().equals(other$status.toString())) return false;
         final Object this$title = this.getTitle();
         final Object other$title = other.getTitle();
         if (this$title == null ? other$title != null : !this$title.equals(other$title)) return false;
@@ -93,7 +93,7 @@ public class TaskEntity {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $task_id = this.getTask_id();
+        final Object $task_id = this.getTaskId();
         result = result * PRIME + ($task_id == null ? 43 : $task_id.hashCode());
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
@@ -104,10 +104,12 @@ public class TaskEntity {
         final Object $endDate = this.getEndDate();
         result = result * PRIME + ($endDate == null ? 43 : $endDate.hashCode());
         final Object $status = this.getStatus();
-        result = result * PRIME + ($status == null ? 43 : $status.hashCode());
+        result = result * PRIME + ($status == null ? 43 : $status.toString().hashCode());
         final Object $title = this.getTitle();
         result = result * PRIME + ($title == null ? 43 : $title.hashCode());
 
         return result;
     }
+
+
 }

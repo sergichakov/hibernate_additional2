@@ -41,7 +41,7 @@ public class UserDefinedType implements UserType<UserEntity> {
             return null;
         }
         UserEntity users=new UserEntity();
-        users.setUser_id(result);
+        users.setUserId(result);
         return users;
     }
     @Override
@@ -49,7 +49,7 @@ public class UserDefinedType implements UserType<UserEntity> {
         if (value == null) {
             st.setNull(index, SqlTypes.LONGVARCHAR);
         }else {
-            st.setLong(index, value.getUser_id());
+            st.setLong(index, value.getUserId());
         }
     }
     @Override

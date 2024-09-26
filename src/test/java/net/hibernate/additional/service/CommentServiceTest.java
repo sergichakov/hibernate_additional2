@@ -1,4 +1,5 @@
 package net.hibernate.additional.service;
+
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -24,6 +25,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.PostgreSQLContainer;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -32,61 +34,68 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class CommentServiceTest {
     CommentService commentService;
     CommentEntity commentEntity;
-    static SessionObject sessionObject=null;
+    static SessionObject sessionObject = null;
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withUsername("anton")
             .withPassword("anton")
             .withReuse(true)
             .withDatabaseName("postgres");
+
     @BeforeAll
     static void beforeAll() {
-        sessionObject= SessionObject.builder()
+        sessionObject = SessionObject.builder()
                 .name("ADMIN")
                 .password("ADMIN")
                 .build();
         postgres.start();
     }
+
     @AfterEach
     void tearDown() throws SQLException, LiquibaseException {
-        Connection connection= DriverManager.getConnection(
-                postgres.getJdbcUrl(),postgres.getUsername(),postgres.getPassword());
-        Database dataBase= DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase=new Liquibase("liquibase/dev/dbchangelog.xml",new ClassLoaderResourceAccessor(),dataBase);
-        liquibase.rollback("initialState","legacy");
+        Connection connection = DriverManager.getConnection(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Database dataBase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        Liquibase liquibase = new Liquibase("liquibase/dev/dbchangelog.xml", new ClassLoaderResourceAccessor(), dataBase);
+        liquibase.rollback("initialState", "legacy");
         dataBase.close();
         connection.close();
     }
+
     @AfterAll
-    static void afterAll()  {
+    static void afterAll() {
+
         postgres.stop();
     }
+
     @BeforeEach
     void setUp() throws LiquibaseException, SQLException {
-        Connection connection= DriverManager.getConnection(
-                postgres.getJdbcUrl(),postgres.getUsername(),postgres.getPassword());
-        Database dataBase= DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase=new Liquibase("liquibase/dev/dbchangelog.xml",new ClassLoaderResourceAccessor(),dataBase);
+        Connection connection = DriverManager.getConnection(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Database dataBase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        Liquibase liquibase = new Liquibase("liquibase/dev/dbchangelog.xml", new ClassLoaderResourceAccessor(), dataBase);
         liquibase.update();
         dataBase.close();
         connection.close();
-        commentService =new CommentService(new CommentServiceTest.SessionRepo());
-        TaskEntity taskEntity=null;
-        try(Session session=new CommentServiceTest.SessionRepo().getSession().openSession()){
-            Transaction transaction=session.beginTransaction();
-            UserEntity userEntity=UserEntity.builder()
+        commentService = new CommentService(new CommentServiceTest.SessionRepo());
+        TaskEntity taskEntity = null;
+        try (Session session = new CommentServiceTest.SessionRepo().getSession().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            UserEntity userEntity = UserEntity.builder()
                     .userName("ADMIN")
                     .password("ADMIN")
                     .build();
-            commentEntity=CommentEntity.builder()
+            commentEntity = CommentEntity.builder()
                     .comment("First Comment")
                     .user(userEntity)
                     .build();
-            taskEntity= TaskEntity.builder()
+            taskEntity = TaskEntity.builder()
                     .name("task1")
                     .comments(Arrays.asList(commentEntity))
                     .user(userEntity)
@@ -94,7 +103,7 @@ class CommentServiceTest {
                     .createDate(new Date(1212121212121L))
                     .build();
             commentEntity.setTask(taskEntity);
-            TagEntity tagEntity=TagEntity.builder()
+            TagEntity tagEntity = TagEntity.builder()
                     .str("tag1")
                     .task(Set.of(taskEntity))
                     .build();
@@ -105,92 +114,98 @@ class CommentServiceTest {
             session.persist(taskEntity);
             transaction.commit();
         }
-        try(Session session=new CommentServiceTest.SessionRepo().getSession().openSession()) {
+        try (Session session = new CommentServiceTest.SessionRepo().getSession().openSession()) {
             Transaction transaction = session.beginTransaction();
             taskEntity.setCreateDate(new Date(1212121212121L));
             session.merge(taskEntity);
             transaction.commit();
-            Query<TaskEntity> newTask=session.createQuery("from TaskEntity",TaskEntity.class);
-            List<TaskEntity> newTaskEntity=newTask.list();
+            Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
+            List<TaskEntity> newTaskEntity = newTask.list();
 
         }
     }
+
     @Test
     void listAllComments() {
-        Long taskId=0L;
-        TaskEntity taskEntity=null;
-        TaskCommandDTO taskCommandDTO=null;
-        String userName="";
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        Long taskId = 0L;
+        TaskEntity taskEntity = null;
+        TaskCommandDTO taskCommandDTO = null;
+        String userName = "";
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
             taskEntity = newTask.list().get(0);
-            userName=taskEntity.getUser().getUserName();
-            TaskCommandDtoEntityMapper commandToEntityMapper=TaskCommandDtoEntityMapper.INSTANCE;
-            taskCommandDTO=commandToEntityMapper.toDTO(taskEntity);
+            userName = taskEntity.getUser().getUserName();
+            TaskCommandDtoEntityMapper commandToEntityMapper = TaskCommandDtoEntityMapper.INSTANCE;
+            taskCommandDTO = commandToEntityMapper.toDTO(taskEntity);
         }
-        List<CommentDTO> commentDTOList= commentService.listAllComments(taskCommandDTO, userName);
+        List<CommentDTO> commentDTOList = commentService.listAllComments(taskCommandDTO, userName);
         assertEquals("First Comment", commentDTOList.get(0).getComment());
     }
+
     @Test
     void editComment() {
-        CommentCommandDTO commentCommandDTO=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        CommentCommandDTO commentCommandDTO = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<CommentEntity> editComment = session.createQuery("from CommentEntity", CommentEntity.class);
             CommentEntity commentEntity = editComment.list().get(0);
             commentEntity.setComment("changed Comment");
-            CommentCommandDtoEntityMapper entityToCommandMapper=CommentCommandDtoEntityMapper.INSTANCE;
-            commentCommandDTO=entityToCommandMapper.toDTO(commentEntity);
+            CommentCommandDtoEntityMapper entityToCommandMapper = CommentCommandDtoEntityMapper.INSTANCE;
+            commentCommandDTO = entityToCommandMapper.toDTO(commentEntity);
         }
         assertTrue(commentService.editComment(commentCommandDTO));
-        String changedComment="";
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        String changedComment = "";
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<CommentEntity> editComment = session.createQuery("from CommentEntity", CommentEntity.class);
             CommentEntity commentEntity = editComment.list().get(0);
             changedComment = commentEntity.getComment();
         }
-        assertEquals("changed Comment",changedComment);
+        assertEquals("changed Comment", changedComment);
     }
+
     @Test
     void createComment() {
-        CommentCommandDTO commentCommandDTO=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        CommentCommandDTO commentCommandDTO = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
             TaskEntity taskEntity = newTask.list().get(0);
-            CommentEntity commentEntity=CommentEntity.builder()
+            CommentEntity commentEntity = CommentEntity.builder()
                     .comment("Second comment")
                     .task(taskEntity)
                     .build();
-            CommentCommandDtoEntityMapper entityToCommandMapper=CommentCommandDtoEntityMapper.INSTANCE;
-            commentCommandDTO=entityToCommandMapper.toDTO(commentEntity);
+            CommentCommandDtoEntityMapper entityToCommandMapper = CommentCommandDtoEntityMapper.INSTANCE;
+            commentCommandDTO = entityToCommandMapper.toDTO(commentEntity);
         }
         commentService.createComment(commentCommandDTO);
-        Long count=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
-            Query countQuery=session.createNativeQuery("select count(*) from comments");
-            count=(Long)countQuery.getSingleResultOrNull();
+        Long count = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
+            Query countQuery = session.createNativeQuery("select count(*) from comments");
+            count = (Long) countQuery.getSingleResultOrNull();
         }
-        assertEquals(2,count);
+        assertEquals(2, count);
     }
+
     @Test
     void deleteComment() {
-        CommentCommandDTO commentCommandDTO=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        CommentCommandDTO commentCommandDTO = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
             CommentEntity commentEntity = newTask.list().get(0).getComments().get(0);
-            
-            CommentCommandDtoEntityMapper entityToCommandMapper=CommentCommandDtoEntityMapper.INSTANCE;
-            commentCommandDTO=entityToCommandMapper.toDTO(commentEntity);
+
+            CommentCommandDtoEntityMapper entityToCommandMapper = CommentCommandDtoEntityMapper.INSTANCE;
+            commentCommandDTO = entityToCommandMapper.toDTO(commentEntity);
         }
         commentService.deleteComment(commentCommandDTO);
-        Long count=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
-            Query countQuery=session.createNativeQuery("select count(*) from comments");
-            count=(Long)countQuery.getSingleResultOrNull();
+        Long count = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
+            Query countQuery = session.createNativeQuery("select count(*) from comments");
+            count = (Long) countQuery.getSingleResultOrNull();
         }
-        assertEquals(0,count);
+        assertEquals(0, count);
     }
+
     private static class SessionRepo implements SessionRepository {
         private static SessionFactory sessionFactory;
+
         static {
             Properties properties = new Properties();
             properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
@@ -200,7 +215,7 @@ class CommentServiceTest {
             properties.setProperty("hibernate.connection.password", postgres.getPassword());
             properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
             properties.setProperty("hibernate.show_sql", "true");
-            sessionFactory=new Configuration()
+            sessionFactory = new Configuration()
                     .setProperties(properties)
                     .addAnnotatedClass(TaskEntity.class)
                     .addAnnotatedClass(TagEntity.class)
@@ -208,7 +223,8 @@ class CommentServiceTest {
                     .addAnnotatedClass(CommentEntity.class)
                     .buildSessionFactory();
         }
-        public  SessionFactory getSession(){
+
+        public SessionFactory getSession() {
             return sessionFactory;
         }
     }

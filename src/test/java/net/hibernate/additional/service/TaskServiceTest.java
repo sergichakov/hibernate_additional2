@@ -1,4 +1,5 @@
 package net.hibernate.additional.service;
+
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -31,80 +32,87 @@ import java.sql.*;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-class TaskServiceTest {
+
+public class TaskServiceTest {
     TaskService taskService;
     TaskEntity taskEntity;
-    static SessionObject sessionObject=null;
+    static SessionObject sessionObject = null;
+
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withUsername("anton")
             .withPassword("anton")
-            .withReuse(true)
+            .withReuse(true)        //testcontainers.reuse.enable=true
             .withDatabaseName("postgres");
-    public static void createTableConsistency()  {
-        try(
-                Connection connection= DriverManager.getConnection(
-                        postgres.getJdbcUrl(),postgres.getUsername(),postgres.getPassword()))
-        {
-            String createTable="create table users ("
+
+    public static void createTableConsistency() {
+        try (
+                Connection connection = DriverManager.getConnection(
+                        postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {
+            String createTable = "create table users ("
                     + "user_id      bigint, "
-                    +"password     varchar(255),"
-                    +"user_name    varchar(255),"
-                    +"task_task_id bigint)";
-            String insertTable="INSERT INTO users (task_task_id,user_name, password) VALUES "
-                    +"(2,'ADMIN', 'ADMIN'),"
-                    +"(3,'Sergej', 'Sergej');";
+                    + "password     varchar(255),"
+                    + "user_name    varchar(255),"
+                    + "task_task_id bigint)";
+            String insertTable = "INSERT INTO users (task_task_id,user_name, password) VALUES "
+                    + "(2,'ADMIN', 'ADMIN'),"
+                    + "(3,'Sergej', 'Sergej');";
             PreparedStatement statCreate = connection.prepareStatement(createTable);
             Integer created = statCreate.executeUpdate();
             PreparedStatement statement = connection.prepareStatement(insertTable);
             Integer resultSet = statement.executeUpdate();
 
             connection.close();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     @BeforeAll
     static void beforeAll() {
-        sessionObject= SessionObject.builder()
+        sessionObject = SessionObject.builder()
                 .name("ADMIN")
                 .password("ADMIN")
                 .build();
         postgres.start();
     }
+
     @AfterAll
-    static void afterAll()  {
-        postgres.stop();
+    static void afterAll() {
+
+        //postgres.stop();
     }
+
     @BeforeEach
     void setUp() throws LiquibaseException, SQLException {
-        Connection connection= DriverManager.getConnection(
-        postgres.getJdbcUrl(),postgres.getUsername(),postgres.getPassword());
-        Database dataBase= DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase=new Liquibase("liquibase/dev/dbchangelog.xml",new ClassLoaderResourceAccessor(),dataBase);
+        Connection connection = DriverManager.getConnection(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Database dataBase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        Liquibase liquibase = new Liquibase("liquibase/dev/dbchangelog.xml", new ClassLoaderResourceAccessor(), dataBase);
         liquibase.update();
         dataBase.close();
         connection.close();
-        taskService=new TaskService(new SessionRepo());
-        try(Session session=new SessionRepo().getSession().openSession()){
-            Transaction transaction=session.beginTransaction();
-            UserEntity userEntity=UserEntity.builder()
+        taskService = new TaskService(new SessionRepo());
+        try (Session session = new SessionRepo().getSession().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            UserEntity userEntity = UserEntity.builder()
                     .userName("ADMIN")
                     .password("ADMIN")
                     .build();
-            CommentEntity commentEntity=CommentEntity.builder()
+            CommentEntity commentEntity = CommentEntity.builder()
                     .comment("First Comment")
                     .user(userEntity)
                     .build();
-                    taskEntity=TaskEntity.builder()
+            taskEntity = TaskEntity.builder()
                     .name("task1")
                     .comments(List.of(commentEntity))
                     .user(userEntity)
                     .status(TaskStatus.IN_PROGRESS)
                     .createDate(new Date(1212121212121L))
                     .build();
-            TagEntity tagEntity=TagEntity.builder()
+            TagEntity tagEntity = TagEntity.builder()
                     .str("tag1")
                     .task(Set.of(taskEntity))
                     .build();
@@ -115,102 +123,118 @@ class TaskServiceTest {
             session.persist(taskEntity);
             transaction.commit();
         }
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Transaction transaction = session.beginTransaction();
             taskEntity.setCreateDate(new Date(1212121212121L));
             session.merge(taskEntity);
             transaction.commit();
-            
-            Query<TaskEntity> newTask=session.createQuery("from TaskEntity",TaskEntity.class);
-            List<TaskEntity> newTaskEntity=newTask.list();
-            for(TaskEntity ta:newTaskEntity){
-                System.out.println("EDIT task ta="+ta);
+
+            Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
+            List<TaskEntity> newTaskEntity = newTask.list();
+            for (TaskEntity ta : newTaskEntity) {
+                System.out.println("EDIT task ta=" + ta);
             }
         }
     }
-    @AfterEach
+
+//    @AfterEach////////////////////////////////
     void tearDown() throws SQLException, LiquibaseException {
-        Connection connection= DriverManager.getConnection(
-                postgres.getJdbcUrl(),postgres.getUsername(),postgres.getPassword());
-        Database dataBase= DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase=new Liquibase("liquibase/dev/dbchangelog.xml",new ClassLoaderResourceAccessor(),dataBase);
-        liquibase.rollback("initialState","legacy");
+        Connection connection = DriverManager.getConnection(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        Database dataBase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+        Liquibase liquibase = new Liquibase("liquibase/dev/dbchangelog.xml", new ClassLoaderResourceAccessor(), dataBase);
+        liquibase.rollback("initialState", "legacy");
         dataBase.close();
         connection.close();
     }
+
     @Test
     void listAllTasks() throws AuthenticationException {
-        SessionRepository sessRepo= new SessionRepo();
+        SessionRepository sessRepo = new SessionRepo();
         List<TaskDTO> taskDtoList = taskService.listAllTasks(sessionObject, 0, 3);
-        assertEquals("task1",taskDtoList.get(0).getName());
+        assertEquals("task1", taskDtoList.get(0).getName());
     }
+
     @Test
     void editTask() throws AuthenticationException, NoPermissionException {
-        TaskCommandDTO taskCommandDTO=null;
-        String taskChangedTitle="";
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        TaskCommandDTO taskCommandDTO = null;
+        String taskChangedTitle = "";
+        try (Session session = new SessionRepo().getSession().openSession()) {
             taskEntity.setTitle("TITLE_1");
-            TaskCommandDtoEntityMapper commandToEntityMapper=TaskCommandDtoEntityMapper.INSTANCE;
-            taskCommandDTO=commandToEntityMapper.toDTO(taskEntity);
+            TaskCommandDtoEntityMapper commandToEntityMapper = TaskCommandDtoEntityMapper.INSTANCE;
+            taskCommandDTO = commandToEntityMapper.toDTO(taskEntity);
             session.refresh(taskEntity);
-            taskService.editTask(taskCommandDTO,sessionObject);
-            Query titleQuery=session.createNativeQuery("select task_title from tasks t where name=:task1");
-            titleQuery.setParameter("task1","task1");
-            taskChangedTitle =(String) titleQuery.list().get(0);
+            taskService.editTask(taskCommandDTO, sessionObject);
+            Query titleQuery = session.createNativeQuery("select task_title from tasks t where name=:task1");
+            titleQuery.setParameter("task1", "task1");
+            taskChangedTitle = (String) titleQuery.list().get(0);
         }
-        assertEquals("TITLE_1",taskChangedTitle);
+        assertEquals("TITLE_1", taskChangedTitle);
     }
+
     @Test
     void createTask() throws AuthenticationException, NoPermissionException {
-        TaskCommandDTO taskCommandDTO=TaskCommandDTO.builder()
+        TaskCommandDTO taskCommandDTO = TaskCommandDTO.builder()
                 .name("task 2")
                 .build();
-        TaskDTO taskDTO=taskService.createTask(taskCommandDTO,sessionObject);
-        assertEquals("task 2",taskDTO.getName());
+        TaskDTO taskDTO = taskService.createTask(taskCommandDTO, sessionObject);
+        assertEquals("task 2", taskDTO.getName());
     }
     @Test
     void deleteTask() throws AuthenticationException, NoPermissionException {
-        TaskCommandDTO taskCommandDTO=null;
-        int emptiNess=0;
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        TaskCommandDTO taskCommandDTO = null;
+        int emptiNess = 0;
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<TaskEntity> newTask = session.createQuery("from TaskEntity", TaskEntity.class);
             TaskEntity taskEntity = newTask.list().get(0);
             TaskCommandDtoEntityMapper commandToEntityMapper = TaskCommandDtoEntityMapper.INSTANCE;
             taskCommandDTO = commandToEntityMapper.toDTO(taskEntity);
-            taskService.deleteTask(taskCommandDTO,sessionObject);
+            session.evict(taskEntity);
+            //taskService.deleteTask(taskCommandDTO, sessionObject);
+            //Query<TaskEntity> empty = session.createQuery("from TaskEntity", TaskEntity.class);
+            //emptiNess = empty.list().size();
+        }
+        taskService.deleteTask(taskCommandDTO, sessionObject);
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query<TaskEntity> empty = session.createQuery("from TaskEntity", TaskEntity.class);
             emptiNess = empty.list().size();
         }
-        assertEquals(0,emptiNess);
+        assertEquals(0, emptiNess);
     }
+
     @Test
     void getAllCount() {
-        Long count=null;
-        try(Session session=new SessionRepo().getSession().openSession()) {
+        Long count = null;
+        try (Session session = new SessionRepo().getSession().openSession()) {
             Query query = session.createQuery("select count(*) from TaskEntity ");
-            count=(Long)query.uniqueResult();
+            count = (Long) query.uniqueResult();
         }
-        assertEquals(1,count);
+        assertEquals(1, count);
     }
+
     @Test
     void getIdOfTag() {
-        String tagTitle="tag1";
-        Long resultLong=0L;
-        Long tagIndex=taskService.getIdOfTag(tagTitle);
-        try(Session session=new SessionRepo().getSession().openSession()) {
-            NativeQuery<Long> lon=session.createNativeQuery("select tag_id from tags where str=:tagStr",Long.class);
-            lon.setParameter("tagStr",tagTitle);
-            resultLong=lon.getSingleResultOrNull();
+        String tagTitle = "tag1";
+        Long resultLong = 0L;
+        Long tagIndex = taskService.getIdOfTag(tagTitle);
+        try (Session session = new SessionRepo().getSession().openSession()) {
+            NativeQuery<Long> lon = session.createNativeQuery("select tag_id from tags where str=:tagStr", Long.class);
+            lon.setParameter("tagStr", tagTitle);
+            resultLong = lon.getSingleResultOrNull();
         }
-        assertEquals(resultLong,tagIndex);
+        assertEquals(resultLong, tagIndex);
     }
+
     @Test
     void getAuthenticatedUser() throws AuthenticationException, NoPermissionException {
-        UserDTO userDTO=taskService.getAuthenticatedUser(sessionObject);
-        assertEquals("ADMIN",userDTO.getUserName());
+        UserDTO userDTO = taskService.getAuthenticatedUser(sessionObject);
+        assertEquals("ADMIN", userDTO.getUserName());
     }
-    private static class SessionRepo implements SessionRepository{
+
+    private static class SessionRepo implements SessionRepository {
+
         private static SessionFactory sessionFactory;
+
         static {
             Properties properties = new Properties();
             properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
@@ -220,7 +244,7 @@ class TaskServiceTest {
             properties.setProperty("hibernate.connection.password", postgres.getPassword());
             properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
             properties.setProperty("hibernate.show_sql", "true");
-            sessionFactory=new Configuration()
+            sessionFactory = new Configuration()
                     .setProperties(properties)
                     .addAnnotatedClass(TaskEntity.class)
                     .addAnnotatedClass(TagEntity.class)
@@ -228,7 +252,8 @@ class TaskServiceTest {
                     .addAnnotatedClass(CommentEntity.class)
                     .buildSessionFactory();
         }
-        public  SessionFactory getSession(){
+
+        public SessionFactory getSession() {
             return sessionFactory;
         }
     }
