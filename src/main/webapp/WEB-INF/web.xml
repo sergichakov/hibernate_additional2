@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+    <servlet>
+        <servlet-name>viewRequestServlet</servlet-name>
+        <servlet-class>net.hibernate.additional.controller.ViewListOfTasksServlet</servlet-class>
+    </servlet>
+<servlet>
+<servlet-name>registerServlet2</servlet-name>
+<servlet-class>net.hibernate.additional.controller.RegisterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>registerServlet2</servlet-name>
+      <url-pattern></url-pattern>
+  </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>viewRequestServlet</servlet-name>
+        <url-pattern>/task</url-pattern>
+    </servlet-mapping>
+  </web-app>
