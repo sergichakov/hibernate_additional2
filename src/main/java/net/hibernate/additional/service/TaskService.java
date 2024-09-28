@@ -21,18 +21,18 @@ import org.hibernate.query.Order;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.PostgreSQLContainer;
+//import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.*;
 import java.util.Date;
 
 
 public class TaskService {
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
+    /*static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3")
             .withUsername("anton")
             .withPassword("anton")
             .withReuse(true)
-            .withDatabaseName("postgres");
+            .withDatabaseName("postgres");*/
     private Logger logger = null;
     private volatile SessionRepository sessionRepoHelper;
 

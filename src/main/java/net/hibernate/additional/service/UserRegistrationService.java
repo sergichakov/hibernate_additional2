@@ -51,7 +51,7 @@ public class UserRegistrationService {
             userEntityQuery.setParameter("userN", userName);
             List<UserEntity> listEntity = userEntityQuery.list();
             if (!listEntity.isEmpty()) {
-                userEntity = userEntityQuery.list().get(0);
+                userEntity = listEntity.get(0);
             }
             if (userEntity == null) {
                 if (password == null || password.isEmpty()) {
@@ -62,7 +62,7 @@ public class UserRegistrationService {
             }
             if (userEntity.getPassword() == null) {
                 if (password == null || password.isEmpty()) {
-                    throw new AuthenticationException("stored password and given is Null");
+                    //throw new AuthenticationException("stored password and given is Null");
                 } else {
                     Transaction transaction = session.beginTransaction();
                     userEntity.setPassword(password);
